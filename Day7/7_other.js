@@ -1,59 +1,65 @@
-const readline = require('readline');
 const fs = require('fs');
 
-const findColorsContaining = (color, bags) => {
-  const foundColors = bags.filter((c) => c.children.some((child) => child.color.includes(color)));
+// parse rules
+const rules = Array.from(
+        fs.readFileSync('./Day7/input.txt', 'utf-8')
+        .matchAll(/^\s*(.*) bags contain (.*)\.\s*$/gm)
+    )
+    .map(ruleParts => ({
+        color: ruleParts[1],
+        contents: ruleParts[2]
+            .split(/,/g)
+            .filter(ruleContent => !/no other bags/.test(ruleContent))
+            .map(ruleContent => {
+                const contentParts = ruleContent.match(/^\s*(\d+) (.*) bags?\.?\s*$/);
+                return {
+                    count: parseInt(contentParts[1]),
+                    color: contentParts[2]
+                };
+            })
+    })
+);
 
-  return [...foundColors, ...foundColors.map((c) => findColorsContaining(c.parentColor, bags)).flat()]
-    .filter((value, index, array) => array.indexOf(value) === index);
-};
+// create map to easily lookup rules
+const rulesMap = rules.reduce((ruleMap, rule) => {
+    ruleMap.set(rule.color, rule);
+    return ruleMap;
+}, new Map());
 
-const findNumberOfPossibleBags = (color, bags) => {
-  const foundBag = bags.find((c) => c.parentColor.includes(color));
+function canBagContainColor(containerColor, targetColor) {
+    const rule = rulesMap.get(containerColor);
 
-  if (foundBag.children.length === 0) {
-    return 1;
-  }
+    // if rule does not exist for color, then can't contain
+    if (!rule) {
+        console.log(`No rule for color ${ containerColor }.`);
+        return false;
+    }
 
-  return foundBag.children.reduce((sum, child) => {
-    return sum + parseInt(child.number, 10) * findNumberOfPossibleBags(child.color, bags);
-  }, 1);
-};
+    // check if bag can contain directly
+    if (rule.contents.some(content => content.color === targetColor)) {
+        return true;
+    }
 
-const getAllGroupsAnswers = async (bagToContain) => {
-  const readInterface = readline.createInterface({
-    input: fs.createReadFileStream('./Day7/input.txt'),
-    output: process.stdout,
-    console: false,
-  });
+    // check if bag can contain eventually
+    if (rule.contents.some(content => canBagContainColor(content.color, targetColor))) {
+        return true;
+    }
 
-  const colors = [];
-  const NO_BAGS = 'no other';
+    // if we get here, then this bag cannot contain the color
+    return false;
+}
 
-  for await (const line of readInterface) {
-    const definedColor = line.split(' bags contain ')[0];
-    const availableColors = line.split(' bags contain ')[1]
-      .replace('.', '')
-      .replace(' bags', '')
-      .split(', ');
+const colorsThatContainShinyGold = new Set(
+    rules
+    .filter(rule => canBagContainColor(rule.color, 'shiny gold'))
+    .map(rule => rule.color)
+);
+console.log(`Part 1: number of bag colors that can contain shiny gold = ${ colorsThatContainShinyGold.size }`);
 
-    colors.push({
-      parentColor: definedColor,
-      children: availableColors
-        .filter((color) => color !== NO_BAGS)
-        .map((color) => ({
-          number: color.split(' ')[0],
-          color: color.split(' ')[1] + ' ' + color.split(' ')[2],
-        })),
-    });
-  }
+function countNestedBags(color) {
+    const rule = rulesMap.get(color);
+    return rule.contents.reduce((count, content) => count + (content.count * (1 + countNestedBags(content.color))), 0);
+}
 
-  return [findColorsContaining(bagToContain, colors), findNumberOfPossibleBags(bagToContain, colors)];
-};
-
-
-getAllGroupsAnswers('shiny gold')
-  .then(([colors, numberOfBags]) => {
-    console.log('colors: ', colors.length);
-    console.log('numberOfBags: ', numberOfBags - 1);
-  });
+const bagsInsideShinyGold = countNestedBags('shiny gold');
+console.log(`Part 2: number of bags required inside shiny gold = ${ bagsInsideShinyGold }`);

@@ -343,25 +343,25 @@ fs.readFile('./Day7/input.txt', function(err, data) {
     console.log(`to count: ${toCount.length}`)
 
 
-    bagArray = []
+    // bagArray = []
 
-    for (z in toCount){
-        searchBags(array, toCount[z])
-    }
+    // for (z in toCount){
+    //     searchBags(array, toCount[z])
+    // }
 
-    // console.log(bagArray)
+    // // console.log(bagArray)
 
-    var sixteen = bagArray.toString().split(', ')
+    // var sixteen = bagArray.toString().split(', ')
 
-    for (aa in sixteen) {
-        if (sixteen[aa].toString() === 'no other bags.'){
-            //skip
-        } else {
-            countBags.push(sixteen[aa].toString().substring(0,1))
-            var temp2 = sixteen[aa].toString().substring(2, sixteen[aa].toString().length-6)
-            toCount.push(temp2)
-        }
-    }
+    // for (aa in sixteen) {
+    //     if (sixteen[aa].toString() === 'no other bags.'){
+    //         //skip
+    //     } else {
+    //         countBags.push(sixteen[aa].toString().substring(0,1))
+    //         var temp2 = sixteen[aa].toString().substring(2, sixteen[aa].toString().length-6)
+    //         toCount.push(temp2)
+    //     }
+    // }
 
     console.log(`to count: ${toCount.length}`)
     //------
