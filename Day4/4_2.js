@@ -185,4 +185,3 @@ fs.readFile('./Day4/input.txt', function(err, data) {
 
     console.log(`Number of valid passports ${validPP}`)  
 })
-
