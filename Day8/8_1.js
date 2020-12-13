@@ -5,12 +5,19 @@ var instructionRan = []
 var accumulatorValues = []
 
 const wasInstRan = ((instIndex) => {
-    if (instructionRan.toString().indexOf(instIndex) > -1){
-        console.log(`Instruction index ${instIndex} already executed.  accumlator = ${accumulator}`)
-        return 'Yes'
-    } else {
-        return 'No'
+    // console.log(instIndex)
+    for (z in instructionRan) {
+        if (instructionRan[z] === instIndex){
+            return 'Yes'
+        }
     }
+    // if (instructionRan.toString().indexOf(instIndex) > -1){
+    //     //console.log(`Instruction index ${instIndex} already executed.  accumlator = ${accumulator}`)
+    //     return 'Yes'
+    // } else {
+    //     return 'No'
+    // }
+    return 'No'
 })
 
 const parseInstructions = ((instArray) => {
@@ -20,7 +27,7 @@ const parseInstructions = ((instArray) => {
 
     do {
 
-        console.log(`Current Instruction: ${instArray[indx]}`)
+        //console.log(`Current Instruction: ${instArray[indx]}`)
         
         //check to see if index is in instructionRan
 
@@ -36,30 +43,30 @@ const parseInstructions = ((instArray) => {
         var tempInst = temp[0].toString()
         var tempPM = temp[1].toString().substring(0,1)
         var tempAmnt = temp[1].toString().substring(1)
-        console.log(`Instruction is '${tempInst}', + or - '${tempPM}', amount = '${tempAmnt}'`)
+        //console.log(`Instruction is '${tempInst}', + or - '${tempPM}', amount = '${tempAmnt}'`)
         instructionRan.push(indx)
         switch(tempInst) {
             case 'acc':
-                console.log(`accumulator start = ${accumulator}`)
+                //console.log(`accumulator start = ${accumulator}`)
                 
                 if (tempPM === '+'){
                     accumulator = parseInt(accumulator) + parseInt(tempAmnt)
                 } else {
                     accumulator = parseInt(accumulator) - parseInt(tempAmnt)
                 }
-                console.log(`accumulator end = ${accumulator}`)
+                //console.log(`accumulator end = ${accumulator}`)
                 indx++
-                console.log(`instruction indx is now ${indx}`)
+                //console.log(`instruction indx is now ${indx}`)
                 
                 break;
             case 'jmp':
-                console.log(`indx start = ${indx}`)
+                //console.log(`indx start = ${indx}`)
                 if (tempPM === '+'){
                     indx = parseInt(indx) + parseInt(tempAmnt)
                 } else {
                     indx = parseInt(indx) - parseInt(tempAmnt)
                 }
-                console.log(`indx end = ${indx}`)
+               // console.log(`indx end = ${indx}`)
                 break;
             case 'nop':
                 indx++
@@ -74,12 +81,13 @@ const parseInstructions = ((instArray) => {
 })
 
 fs.readFile('./Day8/input.txt', function(err, data) {
+    // fs.readFile('./Day8/input-test.txt', function(err, data) {
     if(err) throw err
 
     var array = data.toString().split('\r\n')
 
     const finalInst = parseInstructions(array)
 
-    console.log(accumulator)
-    console.log(accumulatorValues)
+    console.log(`accumulator = ${accumulator}`)
+    // console.log(accumulatorValues)
 })
