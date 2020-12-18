@@ -3,30 +3,6 @@ var fs = require('fs')
 var accumulator = 0
 var instructionRan = []
 var accumulatorValues = []
-var jmpIndxs = []
-var nopIndxs = []
-
-const getJmpNop = ((instIndexs) => {
-    
-    for (x in instIndexs){
-        var tempIndexs = instIndexs[x].toString().split(' ')
-        var tempInstIndx = tempIndexs[0].toString()
-        var tempPMs = tempIndexs[1].toString().substring(0,1)
-        var tempAmnts = tempIndexs[1].toString().substring(1)
-        
-        if (tempInstIndx.toString() === 'jmp'){
-            jmpIndxs.push(x)
-        } else if (tempInstIndx.toString() === 'nop') {
-            nopIndxs.push(x)
-        } else {
-
-        }
-    }
-
-    // console.log(`jmpLen = ${jmpIndxs.length}; noplen = ${nopIndxs.length}`)
-
-    return   
-})
 
 const wasInstRan = ((instIndex) => {
     // console.log(instIndex)
@@ -44,11 +20,10 @@ const wasInstRan = ((instIndex) => {
     return 'No'
 })
 
-const parseInstructions = ((instArray, jIndx, nIndx) => {
+const parseInstructions = ((instArray) => {
     // for (a in array) {
     var indx = 0
     var status = 'working'
-    instructionRan = []
 
     do {
 
@@ -58,21 +33,8 @@ const parseInstructions = ((instArray, jIndx, nIndx) => {
 
         var ran = wasInstRan(indx)
 
-        // if (ran === 'Yes'){
-        //     status = 'done'
-        //     // console.log('done')
-        //     break;
-        // }
-
-        // console.log(`${indx}: ${instArray.length}`)
-        if (parseInt(indx) == parseInt(instArray.length))
-        {
-            status = 'final'
-            console.log(`final`)
-            return status
-        } else if (ran === 'Yes'){
+        if (ran === 'Yes'){
             status = 'done'
-            // console.log('Done')
             break;
         }
         
@@ -83,12 +45,6 @@ const parseInstructions = ((instArray, jIndx, nIndx) => {
         var tempAmnt = temp[1].toString().substring(1)
         //console.log(`Instruction is '${tempInst}', + or - '${tempPM}', amount = '${tempAmnt}'`)
         instructionRan.push(indx)
-        if (indx === jIndx){
-            tempInst = 'nop'
-        }
-        if (indx === nIndx) {
-            tempInst = 'jmp'
-        }
         switch(tempInst) {
             case 'acc':
                 //console.log(`accumulator start = ${accumulator}`)
@@ -130,22 +86,13 @@ fs.readFile('./Day8/input.txt', function(err, data) {
 
     var array = data.toString().split('\r\n')
 
-    getJmpNop(array)
-
-    for (j=0;j<jmpIndxs.length;j++){
-        for (n=0;n<nopIndxs.length;n++){
-            accumulator = 0
-            // console.log(`checking ${jmpIndxs[j]} and ${nopIndxs[n]}`)
-            var finalInst = parseInstructions(array, jmpIndxs[j],  nopIndxs[n])
-            if (finalInst == 'found') {
-                console.log(`Found!`)
-                break;
-            }
-        }
-    }
-
+    //get a list of jmp indexs??
+    //loop through the list to switch to nop
     
-    console.log(`j = ${j}: n = ${n}`)
+
+
+    const finalInst = parseInstructions(array)
+
     console.log(`accumulator = ${accumulator}`)
     // console.log(accumulatorValues)
 })
